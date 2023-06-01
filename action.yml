@@ -1,0 +1,128 @@
+name: "Build Docker Image and Push to GHCR"
+author: "@Mbaoma"
+description: "Abstracts defining actions to push Docker images to ghcr.io"
+
+inputs:
+  github_token: 
+     description: "Personal Access Token (PAT) used to authenticate with the GitHub Container Registry."
+     required: true
+     default: ${{ github.token }}
+
+  image_name:
+    description: 'Docker image is named after repository'
+    required: true
+    default: ${{ github.repository }} 
+
+  dockerfile-path:
+    description: 'path to the Dockerfile'
+    required: true
+    default: "Dockerfile"
+
+  context:
+    description: "A path to the context in which the build will happen, see https://docs.docker.com/engine/reference/commandline/build/"
+    required: false
+    default: "."
+
+  registry:
+    description: 'The container registry to push the image to'
+    required: true
+    default: "ghcr.io"
+  
+  registry-username:
+    description: 'The username for authentication to the container registry (defaults to the github.actor)'
+    required: false
+  
+  tags:
+    description: 'The tags to assign to the Docker image'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    # https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry
+    - name: Log in to the Container registry
+      shell: bash
+      env:
+        DOCKER_BUILDKIT: '1'
+        DOCKER_IO_USER: ${{ inputs.registry-username }}
+        IMAGE_NAME: ${{ inputs.image_name }}
+        IMAGE_TAG: ${{ inputs.tags }}
+
+      run: |
+        git clone --depth=1 --branch=${GITHUB_REF##*/} https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }} .
+        # git clone https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }} . --depth=1
+        ls -al
+        echo "Using $(docker -v)"
+        
+        if [ -z "${DOCKER_IO_USER}" ]; then
+          export DOCKER_IO_USER="${{ github.actor }}"
+        fi
+        echo "Your username is ${DOCKER_IO_USER}"
+
+        echo "::group::Logging into the GitHub Container registry ..."
+        echo "${{ github.token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        echo "::endgroup::"
+
+        echo "::group::Set commit tags"
+        #for release events, the tag name is available as github.event.release.tag_name, long SHA as github.sha and short SHA as github.sha_short
+        if [ "${{ github.event_name }}" = "release" ]; then
+          export TAG_NAME="${{ github.event.release.tag_name }}"
+          export COMMIT_TAG="${TAG_NAME#refs/tags/}"
+          export SHA="${{ github.sha }}"
+          export SHORT_SHA="${SHA:0:7}"
+        else
+        #for commits, the tag name is available as github.ref, long SHA as github.sha and short SHA as github.sha_short
+          if [ -z "${IMAGE_TAG}" ]; then
+            export COMMIT_TAG="${GITHUB_REF##*/}"
+            export SHA="${{ github.sha }}"
+            export SHORT_SHA="${SHA:0:7}"
+          fi
+        fi
+
+        # convert the image name to lowercase
+        export IMAGE_NAME=$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')
+
+        echo "Tagging with ${COMMIT_TAG}"
+        echo "Tagging with ${SHORT_SHA}"
+        echo "Tagging with ${SHA}"
+        echo "::endgroup::"
+
+        export BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        export GITHUB_URL=https://github.com/${{ github.repository }}
+
+        echo "::group::Building the Docker image as ghcr.io/${IMAGE_NAME}:${COMMIT_TAG} from ${{ inputs.dockerfile }} in ${{ inputs.context }} context ..."
+
+        docker build \
+          --file "${{ inputs.dockerfile }}" \
+          --progress tty \
+          --cache-from "${{ inputs.registry }}/${IMAGE_NAME}:latest" \
+          --build-arg BUILDKIT_INLINE_CACHE=1 \
+          --build-arg BUILD_DATE="${BUILD_DATE}" \
+          --build-arg GITHUB_SHA="${GITHUB_SHA}" \
+          -t "ghcr.io/${IMAGE_NAME}:${COMMIT_TAG}" \
+          -t "ghcr.io/${IMAGE_NAME}:${SHORT_SHA}" \
+          -t "ghcr.io/${IMAGE_NAME}:${SHA}" \
+          --label "org.label-schema.build-date=${BUILD_DATE}" \
+          --label "org.label-schema.vcs-url=${GITHUB_URL}" \
+          --label "org.label-schema.vcs-ref=${GITHUB_SHA}" \
+          --label "org.opencontainers.image.created=${BUILD_DATE}" \
+          --label "org.opencontainers.image.source=${GITHUB_URL}" \
+          --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
+          "${{ inputs.context }}"
+
+        echo "::endgroup::"
+
+        echo "::group::Inspecting the image ..."
+        docker image ls
+
+        echo "Labels:"
+        docker image inspect "ghcr.io/${IMAGE_NAME}:${COMMIT_TAG}" | jq '.[].Config.Labels'
+
+        echo "Env variables:"
+        docker image inspect "ghcr.io/${IMAGE_NAME}:${COMMIT_TAG}" | jq '.[].Config.Env'
+
+        echo "::endgroup::"
+
+        echo "::group::Pushing the image to ghcr.io ..."
+        docker push --all-tags "ghcr.io/${IMAGE_NAME}" && echo "Pushed"
+        echo "::endgroup::"
