@@ -11,16 +11,6 @@ No more manual hassle! 🚀💪
 ✅ Seamless integration: GitHub Container Registry simplifies container image management.
 
 ## 🛠️ How to Use
-- Create a Personal Access Token (PAT), if you already do not have one and grant ```write``` access to your workflow under the Personal Access Token column. This is because by default, workflows have ```read``` access.
-
-<img width="1271" alt="PAT" src="https://github.com/Mbaoma/AKS-Demo/assets/49791498/034043d1-799f-40e0-be89-8e3e775133f0">
-
-*Generate PAT*
-
-<img width="806" alt="image" src="https://github.com/Mbaoma/AKS-Demo/assets/49791498/06722ea6-72d3-4573-ba62-581929474666">
-
-*Update Permissions*
-
 - In your repository's settings, under the ```Actions``` tab, click on ```General```, scroll to the bottom and enable ```Read and write permissions``` for your ```Workflow Permissions```.
 Click ```Save```.
 
@@ -34,7 +24,7 @@ Click ```Save```.
 
 - Add this step to your workflow as follows:
 ```Docker
-name: Build, Tag and Publish Docker image to ghcr.io
+name: GlueOps Action
  
 on: [push]
 
@@ -54,22 +44,23 @@ Whenever a push event occurs in the repository, this workflow automatically assi
 
 For example, let's consider a scenario where you have a GitHub repository for a web application called ```MyWebApp```. Whenever a developer pushes changes to the ```develop``` branch, the workflow automatically tags the image with the following details:
 
-```bash
-Branch Slug: develop
-Short SHA: abcdefg
-Long SHA: abcdefghijklmnopqrstuvwxyz
-```
+| Key             | Value                                     |
+| ---             | ---                                       |
+| Branch slug     | develop                                   |
+| Short SHA       | 32b5b6b                                   |
+| Long SHA        | 32b5b6b7bd6e070f8f176e1423938d66072e6463  |
+
 
 ### Image Tagging Scenario: On Release Event 🚀
 Whenever a release event occurs in the repository, the action automatically assigns relevant tags to your image. The tags include the ```release version```, ```short SHA (commit identifier)```, and ```long SHA```, providing valuable context about the image's origin and version.
 
-For example, let's consider a scenario where you have a GitHub repository for a web application called ```MyWebApp```. Whenever a developer creates a new release with version ```v1.0```, the action automatically tags the image with the following details:
+For example, let's consider a scenario where you have a GitHub repository for a web application called ```MyWebApp```. Whenever a developer creates a new release with version ```v1.0.0```, the action automatically tags the image with the following details:
 
-```bash
-Release Version: v1.0
-Short SHA: abcdefg
-Long SHA: abcdefghijklmnopqrstuvwxyz
-```
+| Key             | Value                                     |
+| ---             | ---                                       |
+| Release version | v1.0.0                                    |
+| Short SHA       | 32b5b6b                                   |
+| Long SHA        | 32b5b6b7bd6e070f8f176e1423938d66072e6463  |
 
 These automated tagging processes ensures that you can easily track and identify specific versions of your application, streamlining your development and deployment workflows.
 
