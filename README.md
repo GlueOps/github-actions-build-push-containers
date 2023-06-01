@@ -42,8 +42,8 @@ jobs:
   build_tag_push_to_ghcr:
     runs-on: ubuntu-latest
     steps:
-      - name: Build and Push Docker Image
-        uses: Mbaoma/build-image@v1.0.0
+      - name: Build, Tag and Push Docker Image to GHCR
+        uses: GlueOps/github-actions-build-push-containers@v1.0.0
 ```
 
 ## 🔖 Image Tags
