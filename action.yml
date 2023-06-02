@@ -1,6 +1,9 @@
 name: "Build Docker Image and Push to GHCR"
 author: "@GlueOps"
 description: "Abstracts defining actions to push Docker images to ghcr.io"
+branding:
+  icon: 'box'
+  color: 'yellow'
 
 inputs:
   github_token: 
