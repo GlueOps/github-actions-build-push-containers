@@ -52,8 +52,9 @@ runs:
         IMAGE_TAG: ${{ inputs.tags }}
 
       run: |
-        BRANCH_NAME="${GITHUB_REF##*/}"
-        BRANCH_NAME=${BRANCH_NAME#refs/heads/}
+        BRANCH_NAME=""${GITHUB_REF#refs/heads/}""
+        # BRANCH_NAME="${GITHUB_REF##*/}"
+        # BRANCH_NAME=${BRANCH_NAME#refs/heads/}
         echo "branch name is $BRANCH_NAME"
         git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }}" .
 
