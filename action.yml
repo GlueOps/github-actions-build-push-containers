@@ -55,12 +55,10 @@ runs:
         if [ "${{ github.event_name }}" = "release" ]; then
           BRANCH_NAME="${GITHUB_REF#refs/heads/}"
          else
-            BRANCH_NAME="${GITHUB_REF##*/}"
+            BRANCH_NAME="${GITHUB_REF#refs/heads/}"
         fi
         echo "branch name is $BRANCH_NAME"
         git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }}" .
-
-        # git clone --depth=1 --branch=${GITHUB_REF##*/} https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }} .
         ls -al
         echo "Using $(docker -v)"
         
@@ -101,7 +99,6 @@ runs:
         export GITHUB_URL=https://github.com/${{ github.repository }}
 
         echo "::group::Building the Docker image as ghcr.io/${IMAGE_NAME}:${COMMIT_TAG} from ${{ inputs.dockerfile }} in ${{ inputs.context }} context ..."
-        #export COMMIT_TAG="${GITHUB_REF##*/}"
         docker build \
           --file "${{ inputs.dockerfile }}" \
           --progress tty \
