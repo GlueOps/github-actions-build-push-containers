@@ -52,11 +52,12 @@ runs:
         IMAGE_TAG: ${{ inputs.tags }}
 
       run: |
-        if [ "${{ github.event_name }}" = "release" ]; then
-          BRANCH_NAME="${GITHUB_REF##*/}"
-        else
-            BRANCH_NAME="${GITHUB_REF#refs/heads/}"
-        fi
+        # if [ "${{ github.event_name }}" = "release" ]; then
+        #   BRANCH_NAME="${GITHUB_REF##*/}"
+        # else
+        #     BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+        # fi
+        BRANCH_NAME="${GITHUB_REF#refs/heads/}"
         echo "branch name is $BRANCH_NAME"
         git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }}" .
         ls -al
