@@ -52,20 +52,15 @@ runs:
         IMAGE_TAG: ${{ inputs.tags }}
 
       run: |
-        # if [ "${{ github.event_name }}" = "release" ]; then
-        #    TAG_NAME="${{ github.event.release.tag_name }}"
-        #    BRANCH_NAME="${TAG_NAME#refs/tags/}"
-        #    echo "tag name is $BRANCH_NAME"
-        #    export BRANCH_NAME="${TAG_NAME}"
-        # else
-        #     BRANCH_NAME="${GITHUB_REF#refs/heads/}"
-        # fi
+        echo "::group::Cloning target branch..."
         BRANCH_NAME="${GITHUB_REF#refs/heads/}"
         BRANCH_NAME="${BRANCH_NAME#refs/tags/}"
         echo "branch name is $BRANCH_NAME"
+      
         git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }}" .
         ls -al
         echo "Using $(docker -v)"
+        echo "::endgroup::"
         
         if [ -z "${DOCKER_IO_USER}" ]; then
           export DOCKER_IO_USER="${{ github.actor }}"
