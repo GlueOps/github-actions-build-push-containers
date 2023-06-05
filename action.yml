@@ -53,8 +53,8 @@ runs:
 
       run: |
         if [ "${{ github.event_name }}" = "release" ]; then
-          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
-         else
+          BRANCH_NAME="${GITHUB_REF##*/}"
+        else
             BRANCH_NAME="${GITHUB_REF#refs/heads/}"
         fi
         echo "branch name is $BRANCH_NAME"
