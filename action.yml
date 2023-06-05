@@ -54,6 +54,7 @@ runs:
       run: |
         if [ "${{ github.event_name }}" = "release" ]; then
            export TAG_NAME="${{ github.event.release.tag_name }}"
+           echo "tag name is $TAG_NAME"
            export BRANCH_NAME="${TAG_NAME}"
         else
             BRANCH_NAME="${GITHUB_REF#refs/heads/}"
