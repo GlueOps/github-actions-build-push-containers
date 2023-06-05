@@ -72,7 +72,7 @@ These automated tagging processes ensures that you can easily track and identify
 ```bash
 $ git add .
 $ git commit -m 'commit-message'
-$ git tag -a -m "Description of this release" v1
+$ git tag -a -m "Description of this release" v0.0.0 (replace with your version tag)
 $ git push --follow-tags
 ```
 
