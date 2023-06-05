@@ -68,4 +68,22 @@ These automated tagging processes ensures that you can easily track and identify
 - Your ```Dockerfile``` has to be in the root directory.
 - Your ```docker image``` is named after your repository.
 
-This workflow is inspired by macbre's work.
+## Pushing to GitHub
+```bash
+$ git add .
+$ git commit -m 'commit-message'
+$ git tag -a -m "Description of this release" v1
+$ git push --follow-tags
+```
+
+- Delete a tag remotely
+```bash
+$ git push --delete origin v1.0
+```
+
+- Delete a tag locally
+```bash
+$ git tag --delete tagname
+```
+
+This workflow is inspired by [macbre's](https://github.com/macbre/push-to-ghcr) work.

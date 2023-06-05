@@ -52,8 +52,8 @@ runs:
         IMAGE_TAG: ${{ inputs.tags }}
 
       run: |
+        echo "branch name is ${GITHUB_REF##*/}"
         git clone --depth=1 --branch=${GITHUB_REF##*/} https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }} .
-        # git clone https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }} . --depth=1
         ls -al
         echo "Using $(docker -v)"
         
