@@ -52,9 +52,7 @@ runs:
         IMAGE_TAG: ${{ inputs.tags }}
 
       run: |
-        BRANCH_NAME=""${GITHUB_REF#refs/heads/}""
-        # BRANCH_NAME="${GITHUB_REF##*/}"
-        # BRANCH_NAME=${BRANCH_NAME#refs/heads/}
+        BRANCH_NAME="${GITHUB_REF#refs/heads/}"
         echo "branch name is $BRANCH_NAME"
         git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }}" .
 
@@ -75,13 +73,14 @@ runs:
         #for release events, the tag name is available as github.event.release.tag_name, long SHA as github.sha and short SHA as github.sha_short
         if [ "${{ github.event_name }}" = "release" ]; then
           export TAG_NAME="${{ github.event.release.tag_name }}"
-          export COMMIT_TAG="$BRANCH_NAME"
+          export COMMIT_TAG="${TAG_NAME#refs/tags/}"
           export SHA="${{ github.sha }}"
           export SHORT_SHA="${SHA:0:7}"
         else
         #for commits, the tag name is available as github.ref, long SHA as github.sha and short SHA as github.sha_short
           if [ -z "${IMAGE_TAG}" ]; then
-            export COMMIT_TAG="$BRANCH_NAME"
+            export COMMIT_TAG="${GITHUB_REF##*/}"
+            # export COMMIT_TAG="$BRANCH_NAME"
             export SHA="${{ github.sha }}"
             export SHORT_SHA="${SHA:0:7}"
           fi
@@ -99,7 +98,7 @@ runs:
         export GITHUB_URL=https://github.com/${{ github.repository }}
 
         echo "::group::Building the Docker image as ghcr.io/${IMAGE_NAME}:${COMMIT_TAG} from ${{ inputs.dockerfile }} in ${{ inputs.context }} context ..."
-        export COMMIT_TAG="${GITHUB_REF##*/}"
+        #export COMMIT_TAG="${GITHUB_REF##*/}"
         docker build \
           --file "${{ inputs.dockerfile }}" \
           --progress tty \
