@@ -76,14 +76,4 @@ $ git tag -a -m "Description of this release" v0.0.0 (replace with your version 
 $ git push --follow-tags
 ```
 
-- Delete a tag remotely
-```bash
-$ git push --delete origin v1.0
-```
-
-- Delete a tag locally
-```bash
-$ git tag --delete tagname
-```
-
 This workflow is inspired by [macbre's](https://github.com/macbre/push-to-ghcr) work.

@@ -99,7 +99,7 @@ runs:
         export GITHUB_URL=https://github.com/${{ github.repository }}
 
         echo "::group::Building the Docker image as ghcr.io/${IMAGE_NAME}:${COMMIT_TAG} from ${{ inputs.dockerfile }} in ${{ inputs.context }} context ..."
-
+        export COMMIT_TAG="${GITHUB_REF##*/}"
         docker build \
           --file "${{ inputs.dockerfile }}" \
           --progress tty \
