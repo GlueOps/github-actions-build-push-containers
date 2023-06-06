@@ -75,7 +75,7 @@ runs:
         #for release events, the tag name is available as github.event.release.tag_name, long SHA as github.sha and short SHA as github.sha_short
         if [ "${{ github.event_name }}" = "release" ]; then
           export TAG_NAME="${{ github.event.release.tag_name }}"
-          export COMMIT_TAG=$BRANCH_NAME" #"${TAG_NAME#refs/tags/}"
+          export COMMIT_TAG=$BRANCH_NAME #"${TAG_NAME#refs/tags/}"
           export SHA="${{ github.sha }}"
           export SHORT_SHA="${SHA:0:7}"
           echo "Tagging with ${COMMIT_TAG}"
