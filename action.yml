@@ -82,11 +82,12 @@ runs:
         #for commits, the tag name is available as github.ref, long SHA as github.sha and short SHA as github.sha_short
           if [ -z "${IMAGE_TAG}" ]; then
             BRANCH_NAME="${GITHUB_REF#refs/heads/}" 
+            BRANCH_NAME="${GITHUB_REF#refs/tags/}"
             BRANCH_NAME=${BRANCH_NAME////-}      # Replace slashes with hyphens
             BRANCH_NAME=${BRANCH_NAME//[^a-zA-Z0-9_.-]/_}   # Replace invalid characters with underscores
             BRANCH_NAME=${BRANCH_NAME// /_}      # Replace whitespaces with underscores
             BRANCH_NAME=${BRANCH_NAME,,}         # Convert to lowercase     
-            export COMMIT_TAG="$BRANCH_NAME" #"${GITHUB_REF##*/}"
+            export COMMIT_TAG="$BRANCH_NAME"
             export SHA="${{ github.sha }}"
             export SHORT_SHA="${SHA:0:7}"
           fi
