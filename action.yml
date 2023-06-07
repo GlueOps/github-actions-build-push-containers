@@ -71,39 +71,68 @@ runs:
         echo "::endgroup::"
 
         echo "::group::Set commit tags"
-        echo "Event payload: ${{ toJson(github.event) }}"
+        echo "Event payload: ${{ toJson(github.event_name) }}"
+
         #for release events, the tag name is available as github.event.release.tag_name, long SHA as github.sha and short SHA as github.sha_short
-        if [ "${{ github.event_name }}" = "release" or "push" ]; then
-          export COMMIT_TAG=$BRANCH_NAME
-          # export TAG_NAME="${{ github.event.release.tag_name }}"
-          # export COMMIT_TAG="${TAG_NAME#refs/tags/}"
+        if [ "${{ github.event_name }}" = "release" ]; then
+          export TAG_NAME="${{ github.event.release.tag_name }}"
+          export COMMIT_TAG="${TAG_NAME#refs/tags/}"
           export SHA="${{ github.sha }}"
           export SHORT_SHA="${SHA:0:7}"
+          
+          echo "Release Version ${COMMIT_TAG}"
+          echo "Short SHA ${SHORT_SHA}"
+          echo "Long SHA ${SHA}"
 
-          echo "Tagging with release-branch ${COMMIT_TAG}"
-          echo "Tagging with ${SHORT_SHA}"
-          echo "Tagging with ${SHA}"
-        
         else
         #for commits, the tag name is available as github.ref, long SHA as github.sha and short SHA as github.sha_short
           if [ -z "${IMAGE_TAG}" ]; then
-            BRANCH_NAME="${GITHUB_REF#refs/heads/}" # Remove refs/heads/ prefix
             BRANCH_NAME=${BRANCH_NAME////-}      # Replace slashes with hyphens
             BRANCH_NAME=${BRANCH_NAME//[^a-zA-Z0-9_.-]/_}   # Replace invalid characters with underscores
             BRANCH_NAME=${BRANCH_NAME// /_}      # Replace whitespaces with underscores
             BRANCH_NAME=${BRANCH_NAME,,}         # Convert to lowercase     
             export COMMIT_TAG="$BRANCH_NAME"
+            export COMMIT_TAG="${GITHUB_REF##*/}"
             export SHA="${{ github.sha }}"
             export SHORT_SHA="${SHA:0:7}"
+
+             echo "Branch Name ${COMMIT_TAG}"
+             echo "Short SHA ${SHORT_SHA}"
+             echo "Long SHA ${SHA}"
           fi
         fi
+
+        # if [ "${{ github.event_name }}" = "release" or "push" ]; then
+        #   export COMMIT_TAG=$BRANCH_NAME
+        #   # export TAG_NAME="${{ github.event.release.tag_name }}"
+        #   # export COMMIT_TAG="${TAG_NAME#refs/tags/}"
+        #   export SHA="${{ github.sha }}"
+        #   export SHORT_SHA="${SHA:0:7}"
+
+        #   echo "Tagging with release-branch ${COMMIT_TAG}"
+        #   echo "Tagging with ${SHORT_SHA}"
+        #   echo "Tagging with ${SHA}"
+        
+        # else
+        # for commits, the tag name is available as github.ref, long SHA as github.sha and short SHA as github.sha_short
+        #   if [ -z "${IMAGE_TAG}" ]; then
+        #     BRANCH_NAME="${GITHUB_REF#refs/heads/}" # Remove refs/heads/ prefix
+        #     BRANCH_NAME=${BRANCH_NAME////-}      # Replace slashes with hyphens
+        #     BRANCH_NAME=${BRANCH_NAME//[^a-zA-Z0-9_.-]/_}   # Replace invalid characters with underscores
+        #     BRANCH_NAME=${BRANCH_NAME// /_}      # Replace whitespaces with underscores
+        #     BRANCH_NAME=${BRANCH_NAME,,}         # Convert to lowercase     
+        #     export COMMIT_TAG="$BRANCH_NAME"
+        #     export SHA="${{ github.sha }}"
+        #     export SHORT_SHA="${SHA:0:7}"
+        #   fi
+        # fi
 
         # convert the image name to lowercase
         export IMAGE_NAME=$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')
 
-        echo "Tagging with ${COMMIT_TAG}"
-        echo "Tagging with ${SHORT_SHA}"
-        echo "Tagging with ${SHA}"
+        echo "Branch name ${COMMIT_TAG}"
+        echo "Short SHA ${SHORT_SHA}"
+        echo "Long SHA ${SHA}"
         echo "::endgroup::"
 
         export BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
