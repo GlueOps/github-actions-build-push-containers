@@ -130,9 +130,9 @@ runs:
         # convert the image name to lowercase
         export IMAGE_NAME=$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')
 
-        echo "Branch name ${COMMIT_TAG}"
-        echo "Short SHA ${SHORT_SHA}"
-        echo "Long SHA ${SHA}"
+        # echo "Branch name ${COMMIT_TAG}"
+        # echo "Short SHA ${SHORT_SHA}"
+        # echo "Long SHA ${SHA}"
         echo "::endgroup::"
 
         export BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
