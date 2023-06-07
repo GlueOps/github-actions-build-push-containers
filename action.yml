@@ -55,10 +55,9 @@ runs:
         echo "::group::Cloning target branch..."
         BRANCH_NAME="${GITHUB_REF#refs/heads/}"
         BRANCH_NAME="${BRANCH_NAME#refs/tags/}"
-        echo "branch name is $BRANCH_NAME"
+        echo "Current branch is: $BRANCH_NAME"
       
         git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }}" .
-        ls -al
         echo "Using $(docker -v)"
         echo "::endgroup::"
         
@@ -75,12 +74,14 @@ runs:
         #for release events, the tag name is available as github.event.release.tag_name, long SHA as github.sha and short SHA as github.sha_short
         if [ "${{ github.event_name }}" = "release" ]; then
           export TAG_NAME="${{ github.event.release.tag_name }}"
-          export COMMIT_TAG=$BRANCH_NAME #"${TAG_NAME#refs/tags/}"
+          export COMMIT_TAG="${TAG_NAME#refs/tags/}"
           export SHA="${{ github.sha }}"
           export SHORT_SHA="${SHA:0:7}"
-          echo "Tagging with ${COMMIT_TAG}"
+
+          echo "Tagging with release-branch ${COMMIT_TAG}"
           echo "Tagging with ${SHORT_SHA}"
           echo "Tagging with ${SHA}"
+        
         else
         #for commits, the tag name is available as github.ref, long SHA as github.sha and short SHA as github.sha_short
           if [ -z "${IMAGE_TAG}" ]; then
