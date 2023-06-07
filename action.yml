@@ -93,7 +93,6 @@ runs:
             BRANCH_NAME=${BRANCH_NAME// /_}      # Replace whitespaces with underscores
             BRANCH_NAME=${BRANCH_NAME,,}         # Convert to lowercase     
             export COMMIT_TAG="$BRANCH_NAME"
-            export COMMIT_TAG="${GITHUB_REF##*/}"
             export SHA="${{ github.sha }}"
             export SHORT_SHA="${SHA:0:7}"
 
