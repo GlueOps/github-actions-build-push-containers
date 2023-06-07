@@ -71,9 +71,9 @@ runs:
         echo "::endgroup::"
 
         echo "::group::Set commit tags"
+        echo "Event payload: ${{ toJson(github.event) }}"
         #for release events, the tag name is available as github.event.release.tag_name, long SHA as github.sha and short SHA as github.sha_short
         if [ "${{ github.event_name }}" = "release" ]; then
-          echo "Event payload: ${{ toJson(github.event) }}"
           export COMMIT_TAG=$BRANCH_NAME
           # export TAG_NAME="${{ github.event.release.tag_name }}"
           # export COMMIT_TAG="${TAG_NAME#refs/tags/}"
