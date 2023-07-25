@@ -61,8 +61,8 @@ runs:
         export BRANCH_NAME="${BRANCH_NAME#refs/tags/}"
         echo "Current branch is: $BRANCH_NAME"
 
-        git clone --depth=1 --branch="$BRANCH_NAME" "https://x-access-token:${{ inputs.YOUR_PAT }}@github.com/${{ github.repository }}" .
-        # git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ inputs.YOUR_PAT }}@github.com/${{ github.repository }}" .
+        # git clone --depth=1 --branch="$BRANCH_NAME" "https://x-access-token:${{ inputs.YOUR_PAT }}@github.com/${{ github.repository }}" .
+        git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ inputs.YOUR_PAT }}@github.com/${{ github.repository }}" .
         echo "Using $(docker -v)"
         echo "::endgroup::"
         
