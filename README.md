@@ -1,5 +1,5 @@
-# Custom Action to push Docker images to GitHub Container Registry
-Whenever there's a push event or a release event in the repository, this action automatically pushes the Docker image to ghcr.io. 
+<img width="1253" alt="image" src="https://github.com/GlueOps/github-actions-build-push-containers/assets/49791498/2c8b581a-5b28-42aa-a66c-e63679103a8c"># Custom Action to push Docker images to GitHub Container Registry
+Whenever there's a push event or a release event in the repository (public and private), this action automatically pushes the Docker image to ghcr.io. 
 
 No more manual hassle! 🚀💪
 
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build, Tag and Push Docker Image to GHCR
-        uses: GlueOps/github-actions-build-push-containers@v0.1.1
+        uses: GlueOps/github-actions-build-push-containers@v0.1.2
 ```
 
 ## 🔖 Image Tags
