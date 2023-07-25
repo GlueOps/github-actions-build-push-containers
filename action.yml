@@ -11,7 +11,7 @@ inputs:
      required: true
      default: ${{ github.token }}
 
-   YOUR_PAT:
+  YOUR_PAT:
      description: "Personal Access Token (PAT) used to authenticate with GitHub for cloning private repositories."
      required: true
 
