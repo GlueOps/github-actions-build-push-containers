@@ -10,6 +10,10 @@ inputs:
      description: "Personal Access Token (PAT) used to authenticate with the GitHub Container Registry."
      required: true
      default: ${{ github.token }}
+     
+  your_pat: 
+     description: "Personal Access Token (PAT) used to authenticate with GitHub and the GitHub Container Registry."
+     required: true
 
   image_name:
     description: 'Docker image is named after repository'
@@ -56,8 +60,10 @@ runs:
         export BRANCH_NAME="${GITHUB_REF#refs/heads/}"
         export BRANCH_NAME="${BRANCH_NAME#refs/tags/}"
         echo "Current branch is: $BRANCH_NAME"
-      
-        git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }}" .
+
+        git clone --depth 1 --branch $BRANCH_NAME https://${{ inputs.your_pat }}@github.com/owner/repo .
+        # git clone --depth 1 --branch $BRANCH_NAME https://github.com/${{ github.repository }} .
+        # git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }}" .
         echo "Using $(docker -v)"
         echo "::endgroup::"
         
