@@ -11,6 +11,10 @@ inputs:
      required: true
      default: ${{ github.token }}
 
+   YOUR_PAT:
+     description: "Personal Access Token (PAT) used to authenticate with GitHub for cloning private repositories."
+     required: true
+
   image_name:
     description: 'Docker image is named after repository'
     required: true
@@ -58,7 +62,7 @@ runs:
         echo "Current branch is: $BRANCH_NAME"
 
         # git clone --depth=1 --branch="$BRANCH_NAME" git@github.com:${{ github.repository }}.git .
-        git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }}" .
+        git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ inputs.YOUR_PAT }}@github.com/${{ github.repository }}" .
         echo "Using $(docker -v)"
         echo "::endgroup::"
         
