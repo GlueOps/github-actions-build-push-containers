@@ -32,7 +32,6 @@ jobs:
   build_tag_push_to_ghcr:
     runs-on: ubuntu-latest
     steps:
-#     - uses: actions/checkout@v2
       - name: Build, Tag and Push Docker Image to GHCR
         uses: GlueOps/github-actions-build-push-containers@v0.1.1
 ```
