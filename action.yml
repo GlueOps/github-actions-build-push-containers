@@ -10,10 +10,6 @@ inputs:
      description: "Personal Access Token (PAT) used to authenticate with the GitHub Container Registry."
      required: true
      default: ${{ github.token }}
-     
-  your_pat: 
-     description: "Personal Access Token (PAT) used to authenticate with GitHub and the GitHub Container Registry."
-     required: true
 
   image_name:
     description: 'Docker image is named after repository'
@@ -60,9 +56,8 @@ runs:
         export BRANCH_NAME="${GITHUB_REF#refs/heads/}"
         export BRANCH_NAME="${BRANCH_NAME#refs/tags/}"
         echo "Current branch is: $BRANCH_NAME"
-
-        # git clone --depth 1 --branch $BRANCH_NAME https://${{ inputs.your_pat }}@github.com/owner/repo .
-        git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ inputs.your_pat }}@github.com/${{ github.repository }}" .
+      
+        git clone --depth=1 --branch="$BRANCH_NAME" "https://${DOCKER_IO_USER}:${{ github.token }}@github.com/${{ github.repository }}" .
         echo "Using $(docker -v)"
         echo "::endgroup::"
         
@@ -78,23 +73,39 @@ runs:
         echo "::group::Set commit tags"
         echo "Event payload: ${{ toJson(github.event_name) }}"
 
-        if [ -z "${IMAGE_TAG}" ]; then
-          BRANCH_NAME="${BRANCH_NAME#refs/tags/}" 
-          BRANCH_NAME="${BRANCH_NAME#refs/heads/}"
-          BRANCH_NAME=${BRANCH_NAME////-}      # Replace slashes with hyphens
-          BRANCH_NAME=${BRANCH_NAME//[^a-zA-Z0-9_.-]/_}   # Replace invalid characters with underscores
-          BRANCH_NAME=${BRANCH_NAME// /_}      # Replace whitespaces with underscores
-          BRANCH_NAME=${BRANCH_NAME,,}         # Convert to lowercase     
+        #for release events, the tag name is available as github.event.release.tag_name, long SHA as github.sha and short SHA as github.sha_short
+        # if [ "${{ github.event_name }}" = "release" ]; then
+        # export TAG_NAME="${{ github.event.release.tag_name }}"
+        # export COMMIT_TAG="${TAG_NAME#refs/tags/}"
+        # export SHA="${{ github.sha }}"
+        # export SHORT_SHA="${SHA:0:7}"
           
-          export COMMIT_TAG="$BRANCH_NAME"
-          export SHA="${{ github.sha }}"
-          export SHORT_SHA="${SHA:0:7}"
-          
-          echo "Branch Name ${COMMIT_TAG}"
-          echo "Short SHA ${SHORT_SHA}"
-          echo "Long SHA ${SHA}"
-        fi
-        
+        # echo "Release Version ${COMMIT_TAG}"
+        # echo "Short SHA ${SHORT_SHA}"
+        # echo "Long SHA ${SHA}"
+
+        # else
+        #for commits, the tag name is available as github.ref, long SHA as github.sha and short SHA as github.sha_short
+          if [ -z "${IMAGE_TAG}" ]; then
+            BRANCH_NAME="${BRANCH_NAME#refs/tags/}" 
+            BRANCH_NAME="${BRANCH_NAME#refs/heads/}"
+            
+
+            # BRANCH_NAME="${BRANCH_NAME#refs/heads/}" # Remove refs/heads/ prefix
+            BRANCH_NAME=${BRANCH_NAME////-}      # Replace slashes with hyphens
+            BRANCH_NAME=${BRANCH_NAME//[^a-zA-Z0-9_.-]/_}   # Replace invalid characters with underscores
+            BRANCH_NAME=${BRANCH_NAME// /_}      # Replace whitespaces with underscores
+            BRANCH_NAME=${BRANCH_NAME,,}         # Convert to lowercase     
+            export COMMIT_TAG="$BRANCH_NAME"
+            export SHA="${{ github.sha }}"
+            export SHORT_SHA="${SHA:0:7}"
+
+            echo "Branch Name ${COMMIT_TAG}"
+            echo "Short SHA ${SHORT_SHA}"
+            echo "Long SHA ${SHA}"
+          fi
+        # fi
+
         # convert the image name to lowercase
         export IMAGE_NAME=$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')
         echo "::endgroup::"
