@@ -1,7 +1,5 @@
 # Custom Action to push Docker images to GitHub Container Registry
-Whenever there's a push event or a release event in the repository (public and private), this action automatically pushes the Docker image to ghcr.io. 
-
-No more manual hassle! 🚀💪
+Automate your Docker image deployments effortlessly with this custom GitHub Action! 🚀💪 Whenever there's a push event or a release event in your repository (public and private), this action automatically pushes the Docker image to ghcr.io, GitHub's Container Registry.
 
 ## 💡 Benefits:
 ✅ Streamlined workflow: Say goodbye to tedious configuration and manual image deployments.
@@ -11,8 +9,9 @@ No more manual hassle! 🚀💪
 ✅ Seamless integration: GitHub Container Registry simplifies container image management.
 
 ## 🛠️ How to Use
-- In your repository's settings, under the ```Actions``` tab, click on ```General```, scroll to the bottom and enable ```Read and write permissions``` for your ```Workflow Permissions```.
-Click ```Save```.
+- In your repository's settings, under the ```Actions``` tab
+- Click on ```General```, scroll to the bottom and enable ```Read and write permissions``` for your ```Workflow Permissions```.
+- Click ```Save```.
 
 <img width="1143" alt="image" src="https://github.com/Mbaoma/build-image/assets/49791498/92ff77e4-16a9-4798-85bd-3d0ee9a5cb11">
 
