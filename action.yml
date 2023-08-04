@@ -116,7 +116,6 @@ runs:
         echo "::group::Building the Docker image as ghcr.io/${IMAGE_NAME}:${COMMIT_TAG} from ${{ inputs.dockerfile }} in ${{ inputs.context }} context ..."
         docker build \
           --file "${{ inputs.dockerfile }}" \
-          --progress tty \
           --cache-from "${{ inputs.registry }}/${IMAGE_NAME}:latest" \
           --build-arg BUILDKIT_INLINE_CACHE=1 \
           --build-arg BUILD_DATE="${BUILD_DATE}" \
