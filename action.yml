@@ -73,18 +73,6 @@ runs:
         echo "::group::Set commit tags"
         echo "Event payload: ${{ toJson(github.event_name) }}"
 
-        #for release events, the tag name is available as github.event.release.tag_name, long SHA as github.sha and short SHA as github.sha_short
-        # if [ "${{ github.event_name }}" = "release" ]; then
-        # export TAG_NAME="${{ github.event.release.tag_name }}"
-        # export COMMIT_TAG="${TAG_NAME#refs/tags/}"
-        # export SHA="${{ github.sha }}"
-        # export SHORT_SHA="${SHA:0:7}"
-          
-        # echo "Release Version ${COMMIT_TAG}"
-        # echo "Short SHA ${SHORT_SHA}"
-        # echo "Long SHA ${SHA}"
-
-        # else
         #for commits, the tag name is available as github.ref, long SHA as github.sha and short SHA as github.sha_short
           if [ -z "${IMAGE_TAG}" ]; then
             BRANCH_NAME="${BRANCH_NAME#refs/tags/}" 
@@ -104,7 +92,6 @@ runs:
             echo "Short SHA ${SHORT_SHA}"
             echo "Long SHA ${SHA}"
           fi
-        # fi
 
         # convert the image name to lowercase
         export IMAGE_NAME=$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')
