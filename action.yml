@@ -49,15 +49,16 @@ runs:
         DOCKER_BUILDKIT: '1'
         DOCKER_IO_USER: ${{ inputs.registry-username }}
         IMAGE_NAME: ${{ inputs.image_name }}
-        IMAGE_TAG: ${{ inputs.tags }}
 
       run: |
-        echo "::group::Cloning target branch..."
-        export BRANCH_NAME="${GITHUB_REF#refs/heads/}"
-        export BRANCH_NAME="${BRANCH_NAME#refs/tags/}"
-        echo "Current branch is: $BRANCH_NAME"
+        echo "::group::Cloning target ref..."
+        # initial ref is branch
+        export TARGET_REF="${GITHUB_REF#refs/heads/}"
+        # if tag, replace branch with tag
+        export TARGET_REF="${TARGET_REF#refs/tags/}"
+        echo "Current ref is: $TARGET_REF"
       
-        git clone --depth=1 --branch="$BRANCH_NAME" "https://${{ github.actor }}:${{ github.token }}@github.com/${{ github.repository }}" .
+        git clone --depth=1 --branch="$TARGET_REF" "https://${{ github.actor }}:${{ github.token }}@github.com/${{ github.repository }}" .
         echo "Using $(docker -v)"
         echo "::endgroup::"
         
@@ -67,31 +68,24 @@ runs:
         echo "Your username is ${DOCKER_IO_USER}"
 
         echo "::group::Logging into the GitHub Container registry ..."
-        echo "${{ github.token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        echo "${{ github.token }}" | docker login ${{ inputs.registry }} -u ${{ github.actor }} --password-stdin
         echo "::endgroup::"
 
         echo "::group::Set commit tags"
         echo "Event payload: ${{ toJson(github.event_name) }}"
 
-        #for commits, the tag name is available as github.ref, long SHA as github.sha and short SHA as github.sha_short
-          if [ -z "${IMAGE_TAG}" ]; then
-            BRANCH_NAME="${BRANCH_NAME#refs/tags/}" 
-            BRANCH_NAME="${BRANCH_NAME#refs/heads/}"
-            
+        # Clean up TARGET_REF for invalid characters
+        TARGET_REF=${TARGET_REF////-}      # Replace slashes with hyphens
+        TARGET_REF=${TARGET_REF//[^a-zA-Z0-9_.-]/_}   # Replace invalid characters with underscores
+        TARGET_REF=${TARGET_REF// /_}      # Replace whitespaces with underscores
+        TARGET_REF=${TARGET_REF,,}         # Convert to lowercase
+        export TARGET_REF="$TARGET_REF"
+        export SHA="${{ github.sha }}"
+        export SHORT_SHA="${SHA:0:7}"
 
-            # BRANCH_NAME="${BRANCH_NAME#refs/heads/}" # Remove refs/heads/ prefix
-            BRANCH_NAME=${BRANCH_NAME////-}      # Replace slashes with hyphens
-            BRANCH_NAME=${BRANCH_NAME//[^a-zA-Z0-9_.-]/_}   # Replace invalid characters with underscores
-            BRANCH_NAME=${BRANCH_NAME// /_}      # Replace whitespaces with underscores
-            BRANCH_NAME=${BRANCH_NAME,,}         # Convert to lowercase     
-            export COMMIT_TAG="$BRANCH_NAME"
-            export SHA="${{ github.sha }}"
-            export SHORT_SHA="${SHA:0:7}"
-
-            echo "Branch Name ${COMMIT_TAG}"
-            echo "Short SHA ${SHORT_SHA}"
-            echo "Long SHA ${SHA}"
-          fi
+        echo "Target Ref: ${TARGET_REF}"
+        echo "Short SHA: ${SHORT_SHA}"
+        echo "Long SHA: ${SHA}"
 
         # convert the image name to lowercase
         export IMAGE_NAME=$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')
@@ -100,16 +94,16 @@ runs:
         export BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
         export GITHUB_URL=https://github.com/${{ github.repository }}
 
-        echo "::group::Building the Docker image as ghcr.io/${IMAGE_NAME}:${COMMIT_TAG} from ${{ inputs.dockerfile }} in ${{ inputs.context }} context ..."
+        echo "::group::Building the Docker image as ${{ inputs.registry }}/${IMAGE_NAME}:${TARGET_REF} from ${{ inputs.dockerfile }} in ${{ inputs.context }} context ..."
         docker build \
           --file "${{ inputs.dockerfile }}" \
           --cache-from "${{ inputs.registry }}/${IMAGE_NAME}:latest" \
           --build-arg BUILDKIT_INLINE_CACHE=1 \
           --build-arg BUILD_DATE="${BUILD_DATE}" \
           --build-arg GITHUB_SHA="${GITHUB_SHA}" \
-          -t "ghcr.io/${IMAGE_NAME}:${COMMIT_TAG}" \
-          -t "ghcr.io/${IMAGE_NAME}:${SHORT_SHA}" \
-          -t "ghcr.io/${IMAGE_NAME}:${SHA}" \
+          -t "${{ inputs.registry }}/${IMAGE_NAME}:${TARGET_REF}" \
+          -t "${{ inputs.registry }}/${IMAGE_NAME}:${SHORT_SHA}" \
+          -t "${{ inputs.registry }}/${IMAGE_NAME}:${SHA}" \
           --label "org.label-schema.build-date=${BUILD_DATE}" \
           --label "org.label-schema.vcs-url=${GITHUB_URL}" \
           --label "org.label-schema.vcs-ref=${GITHUB_SHA}" \
@@ -124,13 +118,13 @@ runs:
         docker image ls
 
         echo "Labels:"
-        docker image inspect "ghcr.io/${IMAGE_NAME}:${COMMIT_TAG}" | jq '.[].Config.Labels'
+        docker image inspect "${{ inputs.registry }}/${IMAGE_NAME}:${TARGET_REF}" | jq '.[].Config.Labels'
 
         echo "Env variables:"
-        docker image inspect "ghcr.io/${IMAGE_NAME}:${COMMIT_TAG}" | jq '.[].Config.Env'
+        docker image inspect "${{ inputs.registry }}/${IMAGE_NAME}:${TARGET_REF}" | jq '.[].Config.Env'
 
         echo "::endgroup::"
 
-        echo "::group::Pushing the image to ghcr.io ..."
-        docker push --all-tags "ghcr.io/${IMAGE_NAME}" && echo "Pushed"
+        echo "::group::Pushing the image to ${{ inputs.registry }} ..."
+        docker push --all-tags "${{ inputs.registry }}/${IMAGE_NAME}" && echo "Pushed"
         echo "::endgroup::"
