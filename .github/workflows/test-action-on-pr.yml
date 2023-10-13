@@ -1,0 +1,45 @@
+name: Test on PR github-actions-build-push-containers
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test_action:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Test GHCR
+      uses: ./
+      with:
+        image_name: "test-github-actions-build-push-containers"
+        registry: "ghcr.io"
+        context: "./tests/"
+
+    - name: Verify GHCR
+      run: |
+        docker pull ghcr.io/${{ github.repository }}/test-github-actions-build-push-containers:latest
+        docker run ghcr.io/${{ github.repository }}/test-github-actions-build-push-containers:latest
+
+    # # Test ECR
+    # - name: Use my action for ECR
+    #   uses: your-username/your-docker-action@vX.X.X
+    #   with:
+    #     aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     image_name: "test-image"
+    #     registry: "your-account-id.dkr.ecr.your-region.amazonaws.com"
+    #     # and other necessary inputs
+
+    # - name: Verify ECR
+    #   run: |
+    #     $(aws ecr get-login --region your-region --no-include-email)
+    #     docker pull your-account-id.dkr.ecr.your-region.amazonaws.com/test-image:latest
+    #     docker run your-account-id.dkr.ecr.your-region.amazonaws.com/test-image:latest
+
+    # # Test Docker.io
+    # # ... similar structure ...
+
