@@ -24,7 +24,7 @@ jobs:
         docker pull ghcr.io/${{ github.repository }}/test-github-actions-build-push-containers:latest
         docker run ghcr.io/${{ github.repository }}/test-github-actions-build-push-containers:latest
 
-    # # Test ECR
+    # # Test ECR 
     # - name: Use my action for ECR
     #   uses: your-username/your-docker-action@vX.X.X
     #   with:
