@@ -8,10 +8,6 @@ jobs:
   test_action:
     runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
     - name: Test GHCR
       uses: ./
       with:
