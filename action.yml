@@ -29,6 +29,11 @@ inputs:
     required: false
     default: "."
 
+  target_directory:
+    description: 'Directory to clone the repository into.'
+    required: false
+    default: "."
+
 
   # ghcr
   github_token: 
@@ -123,7 +128,7 @@ runs:
         export TARGET_REF="${TARGET_REF#refs/tags/}"
         echo "Current ref is: $TARGET_REF"
       
-        git clone --depth=1 --branch="$TARGET_REF" "https://${{ github.actor }}:${{ github.token }}@github.com/${{ github.repository }}" .
+        git clone --depth=1 --branch="$TARGET_REF" "https://${{ github.actor }}:${{ github.token }}@github.com/${{ github.repository }}" "${{ inputs.target_directory }}"
         echo "Using $(docker -v)"
         echo "::endgroup::"
         
