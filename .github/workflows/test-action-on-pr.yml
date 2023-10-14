@@ -15,7 +15,7 @@ jobs:
         registry: "ghcr.io"
         context: "./tests/"
 
-    - name: Verify GHCR
+    - name: Verify GHCR Build
       run: |
         docker pull ghcr.io/${{ github.repository }}/test-github-actions-build-push-containers:latest
         docker run ghcr.io/${{ github.repository }}/test-github-actions-build-push-containers:latest
