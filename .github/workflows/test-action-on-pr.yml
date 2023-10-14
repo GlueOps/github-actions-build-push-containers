@@ -17,7 +17,8 @@ jobs:
       with:
         image_name: "test-github-actions-build-push-containers"
         registry: "ghcr.io"
-        context: "./tests/"
+        context: "./test-directory/tests/"
+        target_directory: test-directory
 
     - name: Verify GHCR
       run: |
