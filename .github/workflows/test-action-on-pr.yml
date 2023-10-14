@@ -8,6 +8,7 @@ jobs:
   test_action:
     runs-on: ubuntu-latest
 
+    steps:
     - name: Test GHCR
       uses: ./
       with:
