@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
     - name: Test GHCR
       uses: ./
       with:
@@ -16,7 +19,7 @@ jobs:
         registry: "ghcr.io"
         context: "./tests/"
 
-    - name: Verify GHCR Build
+    - name: Verify GHCR
       run: |
         docker pull ghcr.io/${{ github.repository }}/test-github-actions-build-push-containers:latest
         docker run ghcr.io/${{ github.repository }}/test-github-actions-build-push-containers:latest
