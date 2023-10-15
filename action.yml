@@ -1,77 +1,155 @@
 name: "Build Docker Image and Push to GHCR"
 author: "@GlueOps"
-description: "Abstracts defining actions to push Docker images to ghcr.io"
+description: "Abstracts defining actions to push Docker images to desired registry, defaults to ghcr.io"
 branding:
   icon: 'box'
   color: 'yellow'
 
+
+
 inputs:
-  github_token: 
-     description: "Personal Access Token (PAT) used to authenticate with the GitHub Container Registry."
-     required: true
-     default: ${{ github.token }}
+  # common inputs
+  registry:
+    description: 'The container registry to push the image to'
+    required: true
+    default: "ghcr.io"
+
+  registry-username:
+    description: 'The username for authentication to the container registry (defaults to the github.actor)'
+    required: true
+    default: ${{ github.actor }}
 
   image_name:
     description: 'Docker image is named after repository'
     required: true
     default: ${{ github.repository }} 
 
-  dockerfile-path:
-    description: 'path to the Dockerfile'
-    required: true
-    default: "Dockerfile"
-
   context:
     description: "A path to the context in which the build will happen, see https://docs.docker.com/engine/reference/commandline/build/"
     required: false
     default: "."
 
-  registry:
-    description: 'The container registry to push the image to'
-    required: true
-    default: "ghcr.io"
-  
-  registry-username:
-    description: 'The username for authentication to the container registry (defaults to the github.actor)'
+  target_directory:
+    description: 'Directory to clone the repository into.'
     required: false
-  
-  tags:
-    description: 'The tags to assign to the Docker image'
+    default: "."
+
+
+  # ghcr
+  github_token:
+     description: "Personal Access Token (PAT) used to authenticate with the GitHub Container Registry."
+     required: false
+     default: ${{ github.token }}
+
+
+  # ecr
+  aws_access_key_id:
+    description: 'AWS Access Key ID'
     required: false
+
+  aws_secret_access_key:
+    description: 'AWS Secret Access Key'
+    required: false
+
+  aws_default_region:
+    description: 'AWS Default Region'
+    required: false
+    default: "us-west-2"
+
+
+  # docker hub
+  dockerhub_username:
+    description: 'Docker Hub Username'
+    required: false
+
+  dockerhub_password:
+    description: 'Docker Hub Password or Token'
+    required: false
+
+
 
 runs:
   using: "composite"
   steps:
+    - name: Configure for AWS if using ECR
+      shell: bash
+      if: contains(inputs.registry, '.dkr.ecr.')
+      run: |
+        echo "::group::Installing AWS CLI..."
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install --update
+        aws --version
+        echo "::endgroup::"
+        
+        echo "::group::Setting AWS Credentials to Environment Variables"
+        # set aws credentials as env vars
+        if [[ -n "${{ inputs.aws_access_key_id }}" ]]; then
+          echo "AWS_ACCESS_KEY_ID=${{ inputs.aws_access_key_id }}" >> $GITHUB_ENV
+        fi
+        if [[ -n "${{ inputs.aws_secret_access_key }}" ]]; then
+          echo "AWS_SECRET_ACCESS_KEY=${{ inputs.aws_secret_access_key }}" >> $GITHUB_ENV
+        fi
+        if [[ -n "${{ inputs.aws_default_region }}" ]]; then
+          echo "AWS_DEFAULT_REGION=${{ inputs.aws_default_region }}" >> $GITHUB_ENV
+        fi
+        echo "::endgroup::"
+
     # https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry
-    - name: Log in to the Container registry
+    - name: Registry Authentication
+      shell: bash
+      run: |
+        case "${{ inputs.registry }}" in
+          "ghcr.io")
+            echo "${{ inputs.github_token }}" | docker login ${{ inputs.registry }} -u ${{ github.actor }} --password-stdin
+            ;;
+          *".dkr.ecr."*)
+            echo $(aws ecr get-login-password --region ${{ inputs.aws_default_region }}) \
+              | docker login --username AWS --password-stdin ${{ inputs.registry }}
+            ;;
+          "docker.io")
+            echo "${{ inputs.dockerhub_password }}" | docker login -u "${{ inputs.dockerhub_username }}" --password-stdin
+            ;;
+          *)
+            echo "Unsupported registry"
+            exit 1
+            ;;
+        esac
+
+    - name: Determine ref
+      id: determine_ref
+      shell: bash
+      run: |
+        echo "::group::determine ref"
+        if [[ $GITHUB_REF == refs/heads/* ]]; then
+          echo "REF_TYPE=branch" >> $GITHUB_ENV
+          echo "TARGET_REF=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        elif [[ $GITHUB_REF == refs/tags/* ]]; then
+          echo "REF_TYPE=tag" >> $GITHUB_ENV
+          echo "TARGET_REF=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        elif [[ $GITHUB_REF == refs/pull/* ]]; then
+          echo "REF_TYPE=pull_request" >> $GITHUB_ENV
+          echo "TARGET_REF=$GITHUB_SHA" >> $GITHUB_ENV
+        else
+          echo "REF_TYPE=unknown" >> $GITHUB_ENV
+        fi
+        echo "::endgroup::"
+
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ steps.determine_ref.outputs.ref_name }}
+        path: ${{ inputs.target_directory }}
+
+    - name: Build Container
       shell: bash
       env:
         DOCKER_BUILDKIT: '1'
-        DOCKER_IO_USER: ${{ inputs.registry-username }}
         IMAGE_NAME: ${{ inputs.image_name }}
 
       run: |
-        echo "::group::Cloning target ref..."
-        # initial ref is branch
-        export TARGET_REF="${GITHUB_REF#refs/heads/}"
-        # if tag, replace branch with tag
-        export TARGET_REF="${TARGET_REF#refs/tags/}"
-        echo "Current ref is: $TARGET_REF"
-      
-        git clone --depth=1 --branch="$TARGET_REF" "https://${{ github.actor }}:${{ github.token }}@github.com/${{ github.repository }}" .
-        echo "Using $(docker -v)"
-        echo "::endgroup::"
-        
-        if [ -z "${DOCKER_IO_USER}" ]; then
-          export DOCKER_IO_USER="${{ github.actor }}"
-        fi
-        echo "Your username is ${DOCKER_IO_USER}"
-
-        echo "::group::Logging into the GitHub Container registry ..."
-        echo "${{ github.token }}" | docker login ${{ inputs.registry }} -u ${{ github.actor }} --password-stdin
-        echo "::endgroup::"
-
-        echo "::group::Set commit tags"
+        echo "::group::Set Tags"
         echo "Event payload: ${{ toJson(github.event_name) }}"
 
         # Clean up TARGET_REF for invalid characters
