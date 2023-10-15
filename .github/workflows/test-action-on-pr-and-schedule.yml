@@ -1,8 +1,10 @@
-name: Test on PR github-actions-build-push-containers
+name: Test github-actions-build-push-containers on PR and schedule
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  schedule:
+    - cron: '45 12 * * 4'
 
 jobs:
   test_action:
