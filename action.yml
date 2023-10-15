@@ -1,4 +1,4 @@
-name: "Build Docker Image and Push to GHCR"
+name: "Build Docker Image and Push to GHCR, Docker Hub, or AWS ECR"
 author: "@GlueOps"
 description: "Abstracts defining actions to push Docker images to desired registry, defaults to ghcr.io"
 branding:
@@ -63,7 +63,7 @@ inputs:
     required: false
 
   dockerhub_password:
-    description: 'Docker Hub Password or Token'
+    description: 'Docker Hub Personal Access Token'
     required: false
 
 
