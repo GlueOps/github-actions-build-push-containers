@@ -60,6 +60,11 @@ inputs:
     required: false
     default: "us-west-2"
 
+  aws_cli_version:
+    description: 'Version of AWS CLI to use'
+    required: false
+    default: "2.13.20"
+
 
   # docker hub
   dockerhub_username:
@@ -80,7 +85,7 @@ runs:
       if: contains(inputs.registry, '.dkr.ecr.')
       run: |
         echo "::group::Installing AWS CLI..."
-        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${{ inputs.aws_cli_version }}.zip" -o "awscliv2.zip"
         unzip -o awscliv2.zip
         sudo ./aws/install --update
         aws --version
