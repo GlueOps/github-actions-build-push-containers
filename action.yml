@@ -44,11 +44,15 @@ inputs:
 
   # ecr
   aws_access_key_id:
-    description: 'AWS Access Key ID'
+    description: 'AWS Access Key ID - to be used in conjunction with `aws_secret_access_key`'
     required: false
 
   aws_secret_access_key:
-    description: 'AWS Secret Access Key'
+    description: 'AWS Secret Access Key - to be used in conjunction with `aws_access_key_id`'
+    required: false
+
+  aws_role_to_assume:
+    description: 'AWS IAM Role to assume, when using the GitHub OIDC provider in conjunction with a configured AWS IAM Identity Provider endpoint and instead of access key / secret key pair'
     required: false
 
   aws_default_region:
@@ -77,7 +81,7 @@ runs:
       run: |
         echo "::group::Installing AWS CLI..."
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-        unzip awscliv2.zip
+        unzip -o awscliv2.zip
         sudo ./aws/install --update
         aws --version
         echo "::endgroup::"
@@ -94,6 +98,21 @@ runs:
           echo "AWS_DEFAULT_REGION=${{ inputs.aws_default_region }}" >> $GITHUB_ENV
         fi
         echo "::endgroup::"
+
+    - name: AWS Authentication - IAM Keys
+      if: contains(inputs.registry, '.dkr.ecr.') && inputs.aws_access_key_id != '' && inputs.aws_secret_access_key != ''
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ inputs.aws_access_key_id }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+        aws-region: ${{ inputs.aws_default_region }}
+
+    - name: AWS Authentication - AWS IAM Role via OIDC
+      if: contains(inputs.registry, '.dkr.ecr.') && inputs.aws_role_to_assume != ''
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ inputs.aws_role_to_assume }}
+        aws-region: ${{ inputs.aws_default_region }}
 
     # https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry
     - name: Registry Authentication
