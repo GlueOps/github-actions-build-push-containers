@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Push Container to ghcr.io
-        uses: GlueOps/github-actions-build-push-containers@v0.2.0
+        uses: GlueOps/github-actions-build-push-containers@v0.3.0
 ```
 
 #### **Docker Hub (docker.io)**
@@ -56,17 +56,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Push Container to docker.io
-        uses: GlueOps/github-actions-build-push-containers@v0.2.0
+        uses: GlueOps/github-actions-build-push-containers@v0.3.0
         with:
           registry: "docker.io"
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub_password: ${{ secrets.DOCKERHUB_PASSWORD }}
 ```
 
-#### **AWS Elastic Container Registry (.dkr.ecr.)**
+#### **AWS Elastic Container Registry (.dkr.ecr.) - with Access Keys**
 
 ```yaml
-name: Build and Push Container to ECR
+name: Build and Push Container to ECR using Access Keys
 
 on:
   pull_request:
@@ -77,9 +77,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Push Container to ECR
-        uses: GlueOps/github-actions-build-push-containers@v0.2.0
+        uses: GlueOps/github-actions-build-push-containers@v0.3.0
         with:
           registry: "<aws-account-id>.dkr.ecr.<aws-region>.amazonaws.com"
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_default_region: ${{ env.AWS_REGION}}
+```
+
+#### **AWS Elastic Container Registry (.dkr.ecr.) - IAM Role**
+
+Note that additioanl workflow permissions are required to enable use of GitHub OIDC.  Additional Documentation for configuration is available in the [aws-actions/configure-aws-credentials](https://github.com/aws-actions/configure-aws-credentials#oidc) repository.
+
+```yaml
+name: Build and Push Container to ECR using an IAM Role
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  id-token: write
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and Push Container to ECR
+        uses: GlueOps/github-actions-build-push-containers@v0.3.0
+        with:
+          registry: "<aws-account-id>.dkr.ecr.<aws-region>.amazonaws.com"
+          aws_role_to_assume: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_default_region: ${{ env.AWS_REGION}}
 ```
