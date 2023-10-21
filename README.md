@@ -98,6 +98,7 @@ on:
 
 permissions:
   id-token: write
+  contents: read # required because configuring permissions removes all permissions not declared
 
 jobs:
   build_and_push:
