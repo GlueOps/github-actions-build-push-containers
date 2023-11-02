@@ -108,3 +108,24 @@ jobs:
         docker pull $DOCKERHUB_TEST_IMAGE_NAME:${{ github.sha }}
         echo "::endgroup::"
         docker run -e REGISTRY=docker.io $DOCKERHUB_TEST_IMAGE_NAME:${{ github.sha }}
+
+    - name: generate epoch time string for custom tag
+      id: epoch-tag
+      run: echo "EPOCH_TAG=$(date +%s)" >> $GITHUB_ENV
+
+    - name: run ghcr.io with custom tag
+      uses: ./
+      with:
+        image_name: ${{ env.TEST_IMAGE_NAME }}
+        registry: "ghcr.io"
+        tags: ${{ env.EPOCH_TAG }}
+        context: "./test-directory/tests/"
+        target_directory: test-directory
+
+    - name: test ghcr.io with custom tag
+      run: |
+        echo "::group::pull from ghcr.io"
+        echo "pulling ghcr.io/$TEST_IMAGE_NAME:${{ env.EPOCH_TAG }}"
+        docker pull ghcr.io/$TEST_IMAGE_NAME:${{ env.EPOCH_TAG }}
+        echo "::endgroup::"
+        docker run -e REGISTRY="ghcr.io with custom tag" ghcr.io/$TEST_IMAGE_NAME:${{ env.EPOCH_TAG }}

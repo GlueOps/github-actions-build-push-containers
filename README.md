@@ -13,7 +13,7 @@ The default registry is ghcr.io.
 
 ✅ Seamless integration: simplifies container image management.
 
-✅ Default Image Tagging: Out-of-the-box tagging with the below elements.
+✅ Default Image Tagging: Out-of-the-box tagging with the below elements.  The default tags can be overridden by passing in a comma-separated string of desired tags, e.g. "my-tag" or "my-tag-1,my-tag-2".  Tags are generated with the [create-glueops-image-tags](https://github.com/marketplace/actions/create-glueops-image-tags) action.
 
 * `Target Reference:` Either Branch Name or Tag, depending upon the trigger context.
 * `Short SHA`
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Push Container to ghcr.io
-        uses: GlueOps/github-actions-build-push-containers@v0.3.2
+        uses: GlueOps/github-actions-build-push-containers@v0.3.4
 ```
 
 #### **Docker Hub (docker.io)**
@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Push Container to docker.io
-        uses: GlueOps/github-actions-build-push-containers@v0.3.2
+        uses: GlueOps/github-actions-build-push-containers@v0.3.4
         with:
           registry: "docker.io"
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Push Container to ECR
-        uses: GlueOps/github-actions-build-push-containers@v0.3.2
+        uses: GlueOps/github-actions-build-push-containers@v0.3.4
         with:
           registry: "<aws-account-id>.dkr.ecr.<aws-region>.amazonaws.com"
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -105,7 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Push Container to ECR
-        uses: GlueOps/github-actions-build-push-containers@v0.3.2
+        uses: GlueOps/github-actions-build-push-containers@v0.3.4
         with:
           registry: "<aws-account-id>.dkr.ecr.<aws-region>.amazonaws.com"
           aws_role_to_assume: ${{ secrets.AWS_ECR_ROLE_ARN }}
