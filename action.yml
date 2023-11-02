@@ -9,6 +9,11 @@ branding:
 
 inputs:
   # common inputs
+  dockerfile:
+    description: 'The Dockerfile filename'
+    required: false
+    default: 'Dockerfile'
+
   registry:
     description: 'The container registry to push the image to'
     required: true
