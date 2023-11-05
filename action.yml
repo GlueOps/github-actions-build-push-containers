@@ -39,6 +39,11 @@ inputs:
     required: false
     default: "."
 
+  tags:
+    description: 'Comma-separate list of tags for built image.  Defaults to GlueOps tags'
+    required: false
+    default: ''
+
 
   # ghcr
   github_token:
@@ -145,31 +150,16 @@ runs:
             ;;
         esac
 
-    - name: Determine ref
-      id: determine_ref
-      shell: bash
-      run: |
-        echo "::group::determine ref"
-        if [[ $GITHUB_REF == refs/heads/* ]]; then
-          echo "REF_TYPE=branch" >> $GITHUB_ENV
-          echo "TARGET_REF=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        elif [[ $GITHUB_REF == refs/tags/* ]]; then
-          echo "REF_TYPE=tag" >> $GITHUB_ENV
-          echo "TARGET_REF=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-        elif [[ $GITHUB_REF == refs/pull/* ]]; then
-          echo "REF_TYPE=pull_request" >> $GITHUB_ENV
-          echo "TARGET_REF=$GITHUB_SHA" >> $GITHUB_ENV
-        else
-          echo "REF_TYPE=unknown" >> $GITHUB_ENV
-        fi
-        echo "::endgroup::"
-
-
     - name: Checkout
       uses: actions/checkout@v3
       with:
-        ref: ${{ steps.determine_ref.outputs.ref_name }}
+        ref: ''
         path: ${{ inputs.target_directory }}
+    
+    - name: Create GlueOps Tags
+      if: inputs.tags == ''
+      uses: Glueops/github-actions-create-container-tags@v0.1.1
+      id: create-tags
 
     - name: Build Container
       shell: bash
@@ -181,18 +171,19 @@ runs:
         echo "::group::Set Tags"
         echo "Event payload: ${{ toJson(github.event_name) }}"
 
-        # Clean up TARGET_REF for invalid characters
-        TARGET_REF=${TARGET_REF////-}      # Replace slashes with hyphens
-        TARGET_REF=${TARGET_REF//[^a-zA-Z0-9_.-]/_}   # Replace invalid characters with underscores
-        TARGET_REF=${TARGET_REF// /_}      # Replace whitespaces with underscores
-        TARGET_REF=${TARGET_REF,,}         # Convert to lowercase
-        export TARGET_REF="$TARGET_REF"
-        export SHA="${{ github.sha }}"
-        export SHORT_SHA="${SHA:0:7}"
+        # Get Tags
+        TAGS="${{ inputs.tags }}"
+        if [[ -z "$TAGS" ]]; then
+          TAGS="${{ steps.create-tags.outputs.tags_csv }}"
+        fi
 
-        echo "Target Ref: ${TARGET_REF}"
-        echo "Short SHA: ${SHORT_SHA}"
-        echo "Long SHA: ${SHA}"
+        # Get Target Ref
+        TARGET_REF="${{ steps.create-tags.outputs.clean_target_ref}}"
+        if [[ -z "$TARGET_REF" ]]; then
+          TARGET_REF="${TAGS%%,*}"
+        fi
+
+        echo "Using Tags: ${TAGS}"
 
         # convert the image name to lowercase
         export IMAGE_NAME=$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')
@@ -200,17 +191,22 @@ runs:
 
         export BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
         export GITHUB_URL=https://github.com/${{ github.repository }}
-
+        
+        IFS=',' read -ra ADDR <<< "$TAGS"
+        DOCKER_TAGS=""
+        for TAG in "${ADDR[@]}"; do
+          DOCKER_TAGS="$DOCKER_TAGS -t ${{ inputs.registry }}/${IMAGE_NAME}:$TAG"
+        done
+        
         echo "::group::Building the Docker image as ${{ inputs.registry }}/${IMAGE_NAME}:${TARGET_REF} from ${{ inputs.dockerfile }} in ${{ inputs.context }} context ..."
+
         docker build \
-          --file "${{ inputs.dockerfile }}" \
+          --file "${{ inputs.context }}/${{ inputs.dockerfile }}" \
           --cache-from "${{ inputs.registry }}/${IMAGE_NAME}:latest" \
           --build-arg BUILDKIT_INLINE_CACHE=1 \
           --build-arg BUILD_DATE="${BUILD_DATE}" \
           --build-arg GITHUB_SHA="${GITHUB_SHA}" \
-          -t "${{ inputs.registry }}/${IMAGE_NAME}:${TARGET_REF}" \
-          -t "${{ inputs.registry }}/${IMAGE_NAME}:${SHORT_SHA}" \
-          -t "${{ inputs.registry }}/${IMAGE_NAME}:${SHA}" \
+          $DOCKER_TAGS \
           --label "org.label-schema.build-date=${BUILD_DATE}" \
           --label "org.label-schema.vcs-url=${GITHUB_URL}" \
           --label "org.label-schema.vcs-ref=${GITHUB_SHA}" \
@@ -219,10 +215,12 @@ runs:
           --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
           "${{ inputs.context }}"
 
+
         echo "::endgroup::"
 
         echo "::group::Inspecting the image ..."
         docker image ls
+
 
         echo "Labels:"
         docker image inspect "${{ inputs.registry }}/${IMAGE_NAME}:${TARGET_REF}" | jq '.[].Config.Labels'
