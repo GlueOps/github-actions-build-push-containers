@@ -158,7 +158,7 @@ runs:
     
     - name: Create GlueOps Tags
       if: inputs.tags == ''
-      uses: Glueops/github-actions-create-container-tags@feature/add-tag-creation-fallback
+      uses: Glueops/github-actions-create-container-tags@main
       id: create-tags
 
     - name: Build Container
