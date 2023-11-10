@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Push Container to ghcr.io
-        uses: GlueOps/github-actions-build-push-containers@v0.3.4
+        uses: GlueOps/github-actions-build-push-containers@v0.3.5
 ```
 
 #### **Docker Hub (docker.io)**
@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Push Container to docker.io
-        uses: GlueOps/github-actions-build-push-containers@v0.3.4
+        uses: GlueOps/github-actions-build-push-containers@v0.3.5
         with:
           registry: "docker.io"
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Push Container to ECR
-        uses: GlueOps/github-actions-build-push-containers@v0.3.4
+        uses: GlueOps/github-actions-build-push-containers@v0.3.5
         with:
           registry: "<aws-account-id>.dkr.ecr.<aws-region>.amazonaws.com"
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -105,7 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Push Container to ECR
-        uses: GlueOps/github-actions-build-push-containers@v0.3.4
+        uses: GlueOps/github-actions-build-push-containers@v0.3.5
         with:
           registry: "<aws-account-id>.dkr.ecr.<aws-region>.amazonaws.com"
           aws_role_to_assume: ${{ secrets.AWS_ECR_ROLE_ARN }}
