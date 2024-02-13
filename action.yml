@@ -144,6 +144,9 @@ runs:
           "docker.io")
             echo "${{ inputs.dockerhub_password }}" | docker login -u "${{ inputs.dockerhub_username }}" --password-stdin
             ;;
+          "noauth-public-registry.glueopshosted."*)
+            echo "No Auth required on this registry"
+            ;;
           *)
             echo "Unsupported registry"
             exit 1
