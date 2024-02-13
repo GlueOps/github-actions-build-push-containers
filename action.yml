@@ -73,7 +73,7 @@ inputs:
   aws_cli_version:
     description: 'Version of AWS CLI to use'
     required: false
-    default: "2.13.20"
+    default: "2.15.19"
 
 
   # docker hub
@@ -151,7 +151,7 @@ runs:
         esac
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ''
         path: ${{ inputs.target_directory }}
