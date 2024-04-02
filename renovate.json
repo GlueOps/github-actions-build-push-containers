@@ -6,5 +6,6 @@
       "helpers:pinGitHubActionDigests",
       ":pinDevDependencies"
     ],
-    "separateMinorPatch": true
+    "separateMinorPatch": true,
+    "labels": ["auto-update"]
   }
