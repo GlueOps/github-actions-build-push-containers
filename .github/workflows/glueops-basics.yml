@@ -1,0 +1,10 @@
+name: PR Checks and Labels
+
+on: 
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  PR_CHECKS_AND_LABELS:
+    uses: GlueOps/github-workflows/.github/workflows/glueops-basic-pr-checks.yml@feat/adding-new-pr-check-workflows
+    secrets: inherit
