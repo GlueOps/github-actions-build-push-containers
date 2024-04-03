@@ -1,0 +1,11 @@
+name: "auto-release"
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  auto-release:
+    uses: GlueOps/github-workflows/.github/workflows/auto-release.yml@feat/adding-new-pr-check-workflows
+    secrets: inherit
