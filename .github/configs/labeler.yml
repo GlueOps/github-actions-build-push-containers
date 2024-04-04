@@ -1,3 +1,7 @@
+####
+## This is managed via terraform. Any changes to this file may be overridden by our automation
+####
+
 no-release:
 - changed-files:
   - any-glob-to-any-file: '**'
