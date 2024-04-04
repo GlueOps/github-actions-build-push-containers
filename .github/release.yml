@@ -1,0 +1,30 @@
+####
+## This is managed via terraform. Any changes to this file may be overridden by our automation
+####
+
+changelog:
+  exclude:
+    labels:
+      - 'ignore'
+    authors:
+      - 'glueops-terraform-svc-account'
+  categories:
+    - title: Breaking Changes 🛠
+      labels:
+        - 'major'
+        - 'breaking-change'
+    - title: Enhancements 🎉
+      labels:
+        - 'minor'
+        - 'enhancement'
+        - 'new-feature'
+    - title: Other 🐛
+      labels:
+        - 'auto-update'
+        - 'patch'
+        - 'fix'
+        - 'bugfix'
+        - 'bug'
+        - 'hotfix'
+        - 'dependencies'
+        - 'include-in-release-notes'
