@@ -2,6 +2,6 @@
 ## This is managed via terraform. Any changes to this file may be overridden by our automation
 ####
 
-no-release:
+include-in-release-notes:
 - changed-files:
   - any-glob-to-any-file: '**'
