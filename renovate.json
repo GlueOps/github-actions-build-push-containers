@@ -1,11 +1,49 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-      "config:recommended",
-      "docker:pinDigests",
-      "helpers:pinGitHubActionDigests",
-      ":pinDevDependencies"
-    ],
-    "separateMinorPatch": true,
-    "labels": ["auto-update"]
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:pinDigests",
+    "helpers:pinGitHubActionDigests",
+    ":pinDevDependencies"
+  ],
+  "separateMinorPatch": true,
+  "separateMultipleMajor": true,
+  "separateMultipleMinor": true,
+  "labels": [
+    "auto-update"
+  ],
+  "recreateWhen": "always",
+  "schedule": [
+    "* * 15 * *"
+  ],
+  "argocd": {
+    "fileMatch": [
+      "\\.yaml$"
+    ]
+  },
+  "helm-values": {
+    "fileMatch": [
+      "\\.yaml$"
+    ]
+  },
+  "helm-requirements": {
+    "fileMatch": [
+      "\\.yaml$"
+    ]
+  },
+  "helmv3": {
+    "fileMatch": [
+      "\\.yaml$"
+    ]
+  },
+  "kustomize": {
+    "fileMatch": [
+      "\\.yaml$"
+    ]
+  },
+  "kubernetes": {
+    "fileMatch": [
+      "\\.yaml$"
+    ]
   }
+}
