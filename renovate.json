@@ -45,5 +45,6 @@
     "fileMatch": [
       "\\.yaml$"
     ]
-  }
+  },
+  "forkProcessing": "enabled"
 }
