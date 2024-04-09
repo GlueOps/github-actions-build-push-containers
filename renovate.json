@@ -45,5 +45,182 @@
   },
   "forkProcessing": "enabled",
   "timezone": "America/Los_Angeles",
-  "schedule": ["before 6am"]
+  "schedule": ["before 6am"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.devcontainer/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG VERSION_KUBECTL=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "extractVersionTemplate": "^kubernetes-(?<version>.*)$",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "kubernetes/kubectl"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.devcontainer/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG VERSION_OPENTOFU=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "extractVersionTemplate": "(?<version>.*)$",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "opentofu/opentofu"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.devcontainer/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG VERSION_HELM=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "extractVersionTemplate": "(?<version>.*)$",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "helm/helm"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.devcontainer/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG VERSION_GCLOUD_SDK=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "extractVersionTemplate": "(?<version>.*)$",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "google-cloud-sdk-unofficial/google-cloud-sdk"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.devcontainer/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG VERSION_TASKFILE=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "extractVersionTemplate": "(?<version>.*)$",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "go-task/task"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.devcontainer/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG VERSION_KIND=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "extractVersionTemplate": "(?<version>.*)$",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "kubernetes-sigs/kind"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.devcontainer/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG VERSION_K9S=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "extractVersionTemplate": "(?<version>.*)$",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "derailed/k9s"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.devcontainer/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG VERSION_TERRAFORM_DOCS=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "extractVersionTemplate": "(?<version>.*)$",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "terraform-docs/terraform-docs"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.devcontainer/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG VERSION_KUBENT=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "extractVersionTemplate": "(?<version>.*)$",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "doitintl/kube-no-trouble"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.devcontainer/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG VERSION_HELM_DIFF=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "extractVersionTemplate": "(?<version>.*)$",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "databus23/helm-diff"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.devcontainer/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG VERSION_CHARM_GUM=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "extractVersionTemplate": "(?<version>.*)$",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "charmbracelet/gum"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.devcontainer/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG VERSION_ARGO_CD_CLI=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "extractVersionTemplate": "(?<version>.*)$",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "argoproj/argo-cd"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.devcontainer/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG VERSION_K3D=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "extractVersionTemplate": "(?<version>.*)$",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "k3d-io/k3d"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^templates/application-kube-prometheus-stack-crds\\.yaml$"
+      ],
+      "matchStrings": [
+        "targetRevision: kube-prometheus-stack-(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "depNameTemplate": "kube-prometheus-stack",
+      "datasourceTemplate": "helm"
+    }
+  ],
+  "packageRules": [
+    {
+      "managers": ["regex"],
+      "registryUrls": ["https://prometheus-community.github.io/helm-charts"],
+      "datasources": ["helm"],
+      "packageNames": ["kube-prometheus-stack"]
+    }
+  ]
 }
