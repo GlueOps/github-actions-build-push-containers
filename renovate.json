@@ -45,7 +45,9 @@
   },
   "forkProcessing": "enabled",
   "timezone": "America/Los_Angeles",
-  "schedule": ["before 6am"],
+  "schedule": [
+    "before 6am"
+  ],
   "customManagers": [
     {
       "customType": "regex",
@@ -220,18 +222,117 @@
         "^.github/workflows/aws-cloud-regression-suite\\.yml$"
       ],
       "matchStrings": [
-        "ghcr.io/glueops/codespaces:v(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+        "ghcr.io/glueops/codespaces:v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
       ],
       "depNameTemplate": "glueops/codespaces",
       "datasourceTemplate": "github-tags"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^captain-repo\\.tf$"
+      ],
+      "matchStrings": [
+        "terraform-module-kubernetes-hashicorp-vault-configuration.git\\?ref=v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "depNameTemplate": "glueops/terraform-module-kubernetes-hashicorp-vault-configuration",
+      "datasourceTemplate": "github-tags"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^generate-helm-values\\.tf$"
+      ],
+      "matchStrings": [
+        "platform-helm-chart-platform.git\\?ref=v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "depNameTemplate": "glueops/platform-helm-chart-platform",
+      "datasourceTemplate": "github-tags"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^generate-helm-values\\.tf$"
+      ],
+      "matchStrings": [
+        "docs-argocd.git\\?ref=v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "depNameTemplate": "glueops/docs-argocd",
+      "datasourceTemplate": "github-tags"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^modules/tenant-readme/0.1.0/readme\\.tf$"
+      ],
+      "matchStrings": [
+        "codespace_version.* = \"v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "depNameTemplate": "glueops/codespaces",
+      "datasourceTemplate": "github-tags"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^modules/tenant-readme/0.1.0/readme\\.tf$"
+      ],
+      "matchStrings": [
+        "glueops_platform_version.* = \"v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "depNameTemplate": "glueops/platform-helm-chart-platform",
+      "datasourceTemplate": "github-tags"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^modules/tenant-readme/0.1.0/readme\\.tf$"
+      ],
+      "matchStrings": [
+        "tools_version.* = \"v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "depNameTemplate": "glueops/development-only-utilities",
+      "datasourceTemplate": "github-tags"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^modules/tenant-readme/0.1.0/readme\\.tf$"
+      ],
+      "matchStrings": [
+        "argocd_helm_chart_version.* = \"v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "depNameTemplate": "argo-cd",
+      "datasourceTemplate": "helm"
     }
   ],
   "packageRules": [
     {
-      "managers": ["regex"],
-      "registryUrls": ["https://prometheus-community.github.io/helm-charts"],
-      "datasources": ["helm"],
-      "packageNames": ["kube-prometheus-stack"]
+      "managers": [
+        "regex"
+      ],
+      "registryUrls": [
+        "https://prometheus-community.github.io/helm-charts"
+      ],
+      "datasources": [
+        "helm"
+      ],
+      "packageNames": [
+        "kube-prometheus-stack"
+      ]
+    },
+    {
+      "managers": [
+        "regex"
+      ],
+      "registryUrls": [
+        "https://argoproj.github.io/argo-helm"
+      ],
+      "datasources": [
+        "helm"
+      ],
+      "packageNames": [
+        "argo-cd"
+      ]
     }
   ]
 }
