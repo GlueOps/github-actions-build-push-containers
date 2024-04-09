@@ -45,7 +45,5 @@
   },
   "forkProcessing": "enabled",
   "timezone": "America/Los_Angeles",
-  "schedule": [
-    ["before 6am"]
-  ]
+  "schedule": ["before 6am"]
 }
