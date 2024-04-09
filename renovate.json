@@ -13,9 +13,6 @@
     "auto-update"
   ],
   "recreateWhen": "always",
-  "schedule": [
-    "* * 15 * *"
-  ],
   "argocd": {
     "fileMatch": [
       "\\.yaml$"
@@ -47,4 +44,8 @@
     ]
   },
   "forkProcessing": "enabled"
+  "timezone": "America/Los_Angeles",
+  "schedule": [
+    ["before 6am"]
+  ]
 }
