@@ -222,7 +222,7 @@
         "^.github/workflows/aws-cloud-regression-suite\\.yml$"
       ],
       "matchStrings": [
-        "ghcr.io/glueops/codespaces:(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+        "ghcr.io/glueops/codespaces:v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
       ],
       "depNameTemplate": "glueops/codespaces",
       "datasourceTemplate": "github-tags"
@@ -233,7 +233,7 @@
         "^captain-repo\\.tf$"
       ],
       "matchStrings": [
-        "terraform-module-kubernetes-hashicorp-vault-configuration.git\\?ref=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+        "terraform-module-kubernetes-hashicorp-vault-configuration.git\\?ref=v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
       ],
       "depNameTemplate": "glueops/terraform-module-kubernetes-hashicorp-vault-configuration",
       "datasourceTemplate": "github-tags"
@@ -244,7 +244,7 @@
         "^generate-helm-values\\.tf$"
       ],
       "matchStrings": [
-        "platform-helm-chart-platform.git\\?ref=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+        "platform-helm-chart-platform.git\\?ref=v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
       ],
       "depNameTemplate": "glueops/platform-helm-chart-platform",
       "datasourceTemplate": "github-tags"
@@ -255,7 +255,7 @@
         "^generate-helm-values\\.tf$"
       ],
       "matchStrings": [
-        "docs-argocd.git\\?ref=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+        "docs-argocd.git\\?ref=v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
       ],
       "depNameTemplate": "glueops/docs-argocd",
       "datasourceTemplate": "github-tags"
@@ -266,7 +266,7 @@
         "^modules/tenant-readme/0.1.0/readme\\.tf$"
       ],
       "matchStrings": [
-        "codespace_version.* = \"(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+        "codespace_version.* = \"v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
       ],
       "depNameTemplate": "glueops/codespaces",
       "datasourceTemplate": "github-tags"
@@ -277,7 +277,7 @@
         "^modules/tenant-readme/0.1.0/readme\\.tf$"
       ],
       "matchStrings": [
-        "glueops_platform_version.* = \"(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+        "glueops_platform_version.* = \"v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
       ],
       "depNameTemplate": "glueops/platform-helm-chart-platform",
       "datasourceTemplate": "github-tags"
@@ -288,7 +288,7 @@
         "^modules/tenant-readme/0.1.0/readme\\.tf$"
       ],
       "matchStrings": [
-        "tools_version.* = \"(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+        "tools_version.* = \"v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
       ],
       "depNameTemplate": "glueops/development-only-utilities",
       "datasourceTemplate": "github-tags"
@@ -299,7 +299,7 @@
         "^modules/tenant-readme/0.1.0/readme\\.tf$"
       ],
       "matchStrings": [
-        "argocd_helm_chart_version.* = \"(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+        "argocd_helm_chart_version.* = \"v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
       ],
       "depNameTemplate": "argo-cd",
       "datasourceTemplate": "helm"
@@ -310,7 +310,7 @@
         "^generate-tenant-readmes\\.tf$"
       ],
       "matchStrings": [
-        "argocd_app_version.* = \"(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+        "argocd_app_version.* = \"v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
       ],
       "depNameTemplate": "argoproj/argo-cd",
       "datasourceTemplate": "github-tags"
