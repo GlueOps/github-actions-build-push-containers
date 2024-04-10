@@ -303,6 +303,17 @@
       ],
       "depNameTemplate": "argo-cd",
       "datasourceTemplate": "helm"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^generate-tenant-readmes\\.tf$"
+      ],
+      "matchStrings": [
+        "argocd_app_version.* = \"v?(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*"
+      ],
+      "depNameTemplate": "argoproj/argo-cd",
+      "datasourceTemplate": "github-tags"
     }
   ],
   "packageRules": [
