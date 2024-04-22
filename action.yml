@@ -116,7 +116,7 @@ runs:
 
     - name: AWS Authentication - IAM Keys
       if: contains(inputs.registry, '.dkr.ecr.') && inputs.aws_access_key_id != '' && inputs.aws_secret_access_key != ''
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
       with:
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
@@ -124,7 +124,7 @@ runs:
 
     - name: AWS Authentication - AWS IAM Role via OIDC
       if: contains(inputs.registry, '.dkr.ecr.') && inputs.aws_role_to_assume != ''
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
       with:
         role-to-assume: ${{ inputs.aws_role_to_assume }}
         aws-region: ${{ inputs.aws_default_region }}
@@ -151,7 +151,7 @@ runs:
         esac
 
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4
       with:
         ref: ''
         path: ${{ inputs.target_directory }}
