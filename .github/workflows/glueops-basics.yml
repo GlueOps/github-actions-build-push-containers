@@ -1,0 +1,14 @@
+####
+## This is managed via https://github.com/internal-GlueOps/github-shared-files-sync . Any changes to this file may be overridden by our automation
+####
+
+name: "GlueOps Standard Checks"
+
+on: 
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  PR_CHECKS_AND_LABELS:
+    uses: GlueOps/github-workflows/.github/workflows/glueops-basic-pr-checks.yml@main
+    secrets: inherit
