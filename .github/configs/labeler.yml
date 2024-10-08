@@ -1,0 +1,7 @@
+####
+## This is managed via https://github.com/internal-GlueOps/github-shared-files-sync . Any changes to this file may be overridden by our automation
+####
+
+include-in-release-notes:
+- changed-files:
+  - any-glob-to-any-file: '**'
