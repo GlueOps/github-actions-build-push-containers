@@ -1,4 +1,7 @@
-**NOTICE: This repo/action is no longer being maintained.** At GlueOps we have migrated towards using this manifest (see below) so that we can maintain flexibility per repository/image. If you are using GHCR.io as your registry this yaml should provide a drop in replacement:
+# **NOTICE: This repo/action is no longer being maintained.** 
+
+
+At GlueOps we have migrated towards using this manifest (see below) so that we can maintain flexibility per repository/image. If you are using GHCR.io as your registry this yaml should provide a drop in replacement:
 
 
 ```
